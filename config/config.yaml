@@ -1,0 +1,305 @@
+# Configuration file for SecureDoc AI
+# This is the main configuration file that controls all system behavior
+
+# Application settings
+app:
+  name: "SecureDoc AI"
+  version: "1.0.0"
+  description: "Advanced Document PII Detection & Logo Removal System"
+  environment: "development"  # development, staging, production
+
+# OCR Engine Configuration
+ocr:
+  primary_engine: "easyocr"      # easyocr, tesseract
+  fallback_engine: "tesseract"   # easyocr, tesseract
+  confidence_threshold: 0.7      # Minimum confidence for text extraction (0-1)
+  languages: ["en"]              # Supported languages
+  gpu_enabled: true              # Use GPU if available
+  
+  # Image preprocessing options
+  preprocessing:
+    denoise: true
+    deskew: true
+    enhance_contrast: true
+    sharpen: true
+    resize_factor: 1.5
+    binary_threshold: true
+  
+  # Engine-specific settings
+  easyocr:
+    download_enabled: true
+    model_storage_dir: "models/easyocr"
+  
+  tesseract:
+    config_string: "--oem 3 --psm 6"
+    lang_data_dir: "/usr/share/tesseract-ocr/5/tessdata"
+
+# PII Detection Configuration
+pii_detection:
+  engines: ["presidio", "spacy", "custom_patterns"]  # Available engines
+  confidence_threshold: 0.8      # Minimum confidence for PII detection (0-1)
+  enable_context_analysis: true  # Enable context-aware confidence enhancement
+  
+  # Entity types to detect
+  entity_types:
+    - "PERSON"
+    - "EMAIL_ADDRESS" 
+    - "PHONE_NUMBER"
+    - "CREDIT_CARD"
+    - "SSN"
+    - "IP_ADDRESS"
+    - "URL"
+    - "EMPLOYEE_ID"
+    - "ACCESS_CARD"
+    - "POLICY_NUMBER"
+    - "SYSTEM_ID"
+    - "BADGE_NUMBER"
+    - "AUDIT_REF"
+    - "CREDENTIAL_ID"
+    - "ROOM_NUMBER"
+    - "MAC_ADDRESS"
+  
+  # Engine-specific settings
+  presidio:
+    nlp_engine: "spacy"
+    spacy_model: "en_core_web_lg"
+  
+  spacy:
+    model_name: "en_core_web_lg"
+    download_if_missing: true
+  
+  transformers:
+    model_name: "dbmdz/bert-large-cased-finetuned-conll03-english"
+    cache_dir: "models/transformers"
+  
+  custom_patterns:
+    enabled: true
+    confidence_boost: 0.1
+    context_window: 100
+
+# Logo Detection Configuration
+logo_detection:
+  model_path: "yolov8n.pt"       # YOLO model path
+  confidence_threshold: 0.6      # Minimum confidence for logo detection (0-1)
+  iou_threshold: 0.5             # IoU threshold for NMS
+  max_detections: 100            # Maximum detections per image
+  device: "auto"                 # auto, cpu, cuda, mps
+  
+  # Logo classes to detect
+  logo_classes:
+    0: {name: "microsoft", category: "tech", sensitive: true}
+    1: {name: "google", category: "tech", sensitive: true}
+    2: {name: "apple", category: "tech", sensitive: true}
+    3: {name: "amazon", category: "tech", sensitive: true}
+    4: {name: "facebook", category: "social", sensitive: true}
+    5: {name: "twitter", category: "social", sensitive: true}
+    6: {name: "linkedin", category: "social", sensitive: true}
+    7: {name: "generic_company", category: "business", sensitive: true}
+    8: {name: "government_seal", category: "government", sensitive: true}
+    9: {name: "bank_logo", category: "financial", sensitive: true}
+  
+  # Removal methods
+  removal_methods:
+    inpaint: {quality: "high", speed: "slow"}
+    blur: {kernel_size: 51, quality: "medium", speed: "fast"}
+    pixelate: {factor: 20, quality: "low", speed: "fast"}
+    black_box: {quality: "low", speed: "fastest"}
+    replace: {quality: "medium", speed: "medium"}
+
+# Anonymization Configuration
+anonymization:
+  default_strategy: "auto"       # auto, replace, mask, blur, encrypt
+  preserve_format: true          # Preserve original text formatting
+  use_realistic_replacements: true
+  maintain_audit_trail: true
+  
+  # Strategy configurations
+  strategies:
+    replace:
+      placeholder: "[REDACTED]"
+    mask:
+      masking_char: "*"
+      preserve_edges: true
+    blur:
+      blur_radius: 10
+      preserve_structure: true
+    encrypt:
+      algorithm: "sha256"
+      salt_length: 16
+    realistic:
+      use_faker: true
+      locale: "en_US"
+  
+  # Entity-specific strategies
+  entity_strategies:
+    PERSON: "replace_realistic"
+    EMAIL_ADDRESS: "replace_domain"
+    PHONE_NUMBER: "replace_format"
+    CREDIT_CARD: "replace_partial"
+    SSN: "mask"
+    IP_ADDRESS: "replace_network"
+    EMPLOYEE_ID: "replace_format"
+
+# API Configuration
+api:
+  host: "0.0.0.0"
+  port: 8000
+  debug: false
+  cors_enabled: true
+  rate_limiting: true
+  max_file_size: 52428800  # 50MB in bytes
+  
+  # Authentication (if needed)
+  authentication:
+    enabled: false
+    type: "bearer"  # bearer, basic, api_key
+    secret_key: "your-secret-key-here"
+  
+  # Request limits
+  limits:
+    requests_per_minute: 60
+    burst_size: 10
+    max_batch_size: 20
+
+# Streamlit Configuration
+streamlit:
+  page_title: "SecureDoc AI"
+  page_icon: "🔒"
+  layout: "wide"
+  sidebar_state: "expanded"
+  
+  # Theme configuration
+  theme:
+    primary_color: "#FF6B6B"
+    background_color: "#FFFFFF"
+    secondary_background_color: "#F0F2F6"
+    text_color: "#262730"
+    font: "sans serif"
+  
+  # Upload settings
+  upload:
+    max_file_size: 50  # MB
+    allowed_extensions: ["png", "jpg", "jpeg", "tiff", "bmp"]
+    max_files_batch: 10
+
+# Logging Configuration
+logging:
+  level: "INFO"          # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}"
+  
+  # File logging
+  file_logging:
+    enabled: true
+    file_path: "logs/securedoc.log"
+    max_file_size: "10 MB"
+    retention: "30 days"
+    rotation: "daily"
+  
+  # Console logging
+  console_logging:
+    enabled: true
+    colored: true
+  
+  # Component-specific logging levels
+  components:
+    ocr_engine: "INFO"
+    pii_detector: "INFO"
+    logo_detector: "INFO"
+    anonymizer: "INFO"
+    api: "INFO"
+    streamlit: "WARNING"
+
+# Model Management
+models:
+  cache_dir: "models"
+  auto_download: true
+  update_check: true
+  
+  # Model configurations
+  spacy:
+    model: "en_core_web_lg"
+    download_url: "https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.6.0/en_core_web_lg-3.6.0-py3-none-any.whl"
+  
+  yolo:
+    model: "yolov8n.pt"
+    custom_model_path: "models/logo_detection/best.pt"
+    training_enabled: false
+  
+  transformers:
+    cache_dir: "models/transformers"
+    model_name: "bert-base-uncased"
+
+# Performance Configuration
+performance:
+  parallel_processing: true
+  max_workers: 4
+  timeout_seconds: 300
+  batch_size: 10
+  
+  # Memory management
+  memory:
+    max_image_size: "100MB"
+    cache_size: "1GB"
+    gc_frequency: 100  # Process every N documents
+  
+  # GPU settings
+  gpu:
+    enabled: true
+    memory_fraction: 0.8
+    allow_growth: true
+
+# Security Configuration
+security:
+  input_validation:
+    enabled: true
+    max_text_length: 1000000  # 1MB
+    allowed_mime_types: 
+      - "image/jpeg"
+      - "image/png"
+      - "image/tiff"
+      - "image/bmp"
+  
+  output_sanitization:
+    enabled: true
+    remove_metadata: true
+    sanitize_filenames: true
+  
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 60
+    burst_allowance: 10
+
+# Monitoring and Analytics
+monitoring:
+  enabled: true
+  metrics_endpoint: "/metrics"
+  health_endpoint: "/health"
+  
+  # Metrics collection
+  collect_metrics:
+    processing_time: true
+    accuracy_scores: true
+    resource_usage: true
+    error_rates: true
+  
+  # Export settings
+  export:
+    prometheus_enabled: false
+    json_logs: true
+    csv_export: false
+
+# Development Settings (only in development environment)
+development:
+  hot_reload: true
+  debug_images: true
+  save_intermediate_results: true
+  profiling_enabled: false
+  test_mode: false
+
+# Production Settings (only in production environment)
+production:
+  optimize_models: true
+  preload_models: true
+  enable_caching: true
+  log_sensitive_data: false
+  ssl_required: true

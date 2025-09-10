@@ -1,0 +1,97 @@
+# Docker Compose for SecureDoc AI
+version: '3.8'
+
+services:
+  # Main API service
+  securedoc-api:
+    build: .
+    container_name: securedoc-api
+    ports:
+      - "8000:8000"
+    environment:
+      - SECUREDOC_API_HOST=0.0.0.0
+      - SECUREDOC_API_PORT=8000
+      - SECUREDOC_DEBUG=false
+      - SECUREDOC_LOG_LEVEL=INFO
+      - SECUREDOC_MODEL_CACHE_DIR=/app/models
+    volumes:
+      - ./config:/app/config:ro
+      - ./models:/app/models
+      - ./logs:/app/logs
+      - api_uploads:/app/uploads
+      - api_results:/app/results
+    networks:
+      - securedoc-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Streamlit UI service
+  securedoc-ui:
+    build: .
+    container_name: securedoc-ui
+    ports:
+      - "8501:8501"
+    environment:
+      - SECUREDOC_LOG_LEVEL=INFO
+    volumes:
+      - ./config:/app/config:ro
+      - ./models:/app/models
+      - ui_uploads:/app/uploads
+      - ui_results:/app/results
+    networks:
+      - securedoc-network
+    restart: unless-stopped
+    command: ["streamlit", "run", "src/ui/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+    depends_on:
+      - securedoc-api
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: securedoc-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - securedoc-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # Nginx reverse proxy (optional)
+  nginx:
+    image: nginx:alpine
+    container_name: securedoc-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    networks:
+      - securedoc-network
+    restart: unless-stopped
+    depends_on:
+      - securedoc-api
+      - securedoc-ui
+
+volumes:
+  api_uploads:
+    driver: local
+  api_results:
+    driver: local
+  ui_uploads:
+    driver: local
+  ui_results:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  securedoc-network:
+    driver: bridge

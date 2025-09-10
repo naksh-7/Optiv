@@ -1,0 +1,276 @@
+# .gitignore for SecureDoc AI Project
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.conda/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Environment variables
+.env*
+!.env.example
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Model files and weights
+models/
+*.pt
+*.pth
+*.pkl
+*.h5
+*.pb
+*.onnx
+weights/
+checkpoints/
+
+# Data files
+data/
+datasets/
+*.csv
+*.json
+*.xml
+*.txt
+!requirements.txt
+!README.txt
+*.tsv
+*.parquet
+
+# Images and media (except examples)
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.svg
+*.ico
+*.pdf
+*.mp4
+*.avi
+*.mov
+!examples/
+!docs/images/
+!assets/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Cache directories
+.cache/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Documentation builds
+docs/_build/
+site/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Configuration files with secrets
+config/local.yaml
+config/production.yaml
+secrets.yaml
+.secrets
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# YOLO/AI model outputs
+runs/
+exp/
+detect/
+train/
+val/
+
+# OCR temporary files
+ocr_temp/
+processed_images/
+extracted_text/
+
+# Processing results
+results/
+output/
+batch_results/
+processing_cache/
+
+# API uploads
+uploads/
+temp_uploads/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Profiling
+*.prof
+.profile
+
+# Package manager
+pip-log.txt
+pip-delete-this-directory.txt
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+.coverage
+.pytest_cache/
+.coverage.*
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# Translations
+*.mo
+*.pot
+
+# Scrapy
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# DotEnv configuration
+.env
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Operating System Files
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Project specific
+logo_detection_results/
+pii_analysis_results/
+anonymization_output/
+batch_processing_output/
+
+# Ignore large model files that should be downloaded
+src/models/yolo/
+src/models/spacy/
+src/models/transformers/
+
+# Ignore sensitive test data
+test_data/sensitive/
+test_documents/real/
+
+# Ignore performance benchmarks
+benchmarks/results/
+performance_logs/
+
+# Ignore user configurations
+user_config.yaml
+local_settings.py
